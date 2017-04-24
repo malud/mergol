@@ -1,5 +1,5 @@
 # Mergol
-![mergol.png]
+![](https://github.com/malud/mergol/blob/master/mergol.png)
 
 Merging multiple golang source code files of same namespace to one .go file.
 
