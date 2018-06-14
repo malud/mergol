@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-func TestMain__Simple(t *testing.T) {
+func TestMain_Simple(t *testing.T) {
 	// arrange
 	in = "./testdata/simple"
 	out = "./testdata/simple/result/merged.go"
@@ -23,7 +23,7 @@ func TestMain__Simple(t *testing.T) {
 	os.Remove(out)
 }
 
-func TestMain__Complex(t *testing.T) {
+func TestMain_Complex(t *testing.T) {
 	// arrange
 	in = "./testdata/complex"
 	out = "./testdata/complex/result/merged.go"
