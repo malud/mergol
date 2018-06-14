@@ -9,8 +9,7 @@ import (
 	"strings"
 )
 
-var in string
-var out string
+var in, out string
 
 func init() {
 	flag.StringVar(&in, "in", "", "-in path")
@@ -31,6 +30,9 @@ func main() {
 		n := file.Name()
 		if n == "vendor" {
 			fmt.Println("Warning: merging the vendor folder is not supported")
+			continue
+		}
+		if file.IsDir() {
 			continue
 		}
 
