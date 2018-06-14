@@ -9,15 +9,17 @@ import (
 	"strings"
 )
 
-var in = flag.String("in", "", "-in path")
-var out = flag.String("out", "", "-out path")
+var in string
+var out string
+
+func init() {
+	flag.StringVar(&in, "in", "", "-in path")
+	flag.StringVar(&out, "out", "", "-out path")
+	flag.Parse()
+}
 
 func main() {
-	if !flag.Parsed() {
-		flag.Parse()
-	}
-
-	files, err := ioutil.ReadDir(*in)
+	files, err := ioutil.ReadDir(in)
 	if err != nil {
 		fmt.Printf("%v\n", err)
 		os.Exit(1)
@@ -27,8 +29,13 @@ func main() {
 	imports := make(map[string]bool, 0)
 	for _, file := range files {
 		n := file.Name()
-		if strings.Contains(n, ".go") && !strings.Contains(n, "_test") {
-			f, err := os.Open(fmt.Sprintf("%s/%s", *in, n))
+		if n == "vendor" {
+			fmt.Println("Warning: merging the vendor folder is not supported")
+			continue
+		}
+
+		if strings.HasSuffix(n, ".go") && !strings.Contains(n, "_test") {
+			f, err := os.Open(fmt.Sprintf("%s/%s", in, n))
 			if err != nil {
 				fmt.Println(err)
 				continue
@@ -46,10 +53,11 @@ func main() {
 						line := scanner.Text()
 						if line == ")" {
 							break
+						} else if len(strings.TrimSpace(line)) > 0 {
+							// remove tab & quotes
+							unquoted := strings.Replace(line[1:], `"`, ``, 2)
+							imports[unquoted] = true
 						}
-						// remove tab & quotes
-						unquoted := strings.Replace(line[1:], `"`, ``, 2)
-						imports[unquoted] = true
 					}
 					continue
 				}
@@ -76,7 +84,7 @@ func main() {
 		}
 		header = append(header, fmt.Sprint(")\n")...)
 	}
-	err = ioutil.WriteFile(*out, append(header, merged...), 0777)
+	err = ioutil.WriteFile(out, append(header, merged...), 0777)
 	if err != nil {
 		fmt.Printf("%v\n", err)
 	}
